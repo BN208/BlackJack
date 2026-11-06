@@ -17,6 +17,7 @@ dealertotal = [0,0]
 playertotal = [0,0]
 
 money = 100 #sets starting money
+betVal = 0 #current bet value
 
 def FormatCard(tcard): #format as card[[minimum value,maximum value], Name, Suit(1st letter)]
     card=[]
@@ -106,15 +107,29 @@ def tkpg(): #tkinter initialises pygame and then closes
     root.destroy()
     game()
 
+def addBet(val):
+    global betVal
+    global money
+    if (money >= val) and (betVal > 0):
+        betVal += val
+        money += (-1*val)
+
 
 def game():
+    global money
     #print("Game")
     pg.init()
     screen = pg.display.set_mode((1280,720))
     pg.display.set_caption('BlackJack')
     pg.display.set_icon(pg.image.load("assets/cards/IndividualCards/AS.png"))
     clock = pg.time.Clock()
+    font = pg.font.Font(None, 36)
     running=True
+
+    ##buttons
+    BetButton = button(100, 100, 100, 50, "BET: " + str(betVal), font)
+    AddButton = button(210, 100, 50, 50, "+", font, addBet(10))
+    SubButton = button(40, 100, 50, 50, "-", font, addBet(-10))
 
     while running:
     # poll for events
@@ -127,12 +142,49 @@ def game():
         screen.fill("#15AA1A")
 
     # RENDER YOUR GAME HERE
+        moneyCount = font.render("Money: " + str(money), True, (255, 255, 255))
+        screen.blit(moneyCount, (10, 10))  # top-left corner with 10px padding
+        #betShow = font.render("Bet: " + str(betVal), True, (255,255,255))
+        #screen.blit(betVal, (10, 10))
+        BetButton.draw(screen)
+        AddButton.draw(screen)
+        SubButton.draw(screen)
+       
+
     # flip() the display to put your work on screen
         pg.display.flip()
-
         clock.tick(60)  # limits FPS to 60
 
     pg.quit()
+
+class button: #adds class to save time making buttons (x,y, width, height, text, font, colour, hover colour, text colour)
+    def __init__(self, x, y, width, height, text, font, on_click=None,
+                 color=("#19440A"), hover_color=("#44F808"),
+                 text_color=("#FFFFFF")):
+        self.rect = pg.Rect(x, y, width, height)
+        self.font = font
+        self.text = text
+        self.color = color
+        self.hover_color = hover_color
+        self.text_color = text_color
+        self.on_click = on_click  # function to call when clicked
+
+    def is_hovered(self):
+        return self.rect.collidepoint(pg.mouse.get_pos())
+
+    def handle_event(self, event):
+        if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
+            if self.rect.collidepoint(event.pos):
+                if self.on_click:
+                    self.on_click()
+                return True
+        return False
+
+    def draw(self, surface):
+        color = self.hover_color if self.is_hovered() else self.color
+        pg.draw.rect(surface, color, self.rect, border_radius=8)
+        label = self.font.render(self.text, True, self.text_color)
+        surface.blit(label, label.get_rect(center=self.rect.center))
 
 
 #---TKinter---# (I HATE TKINTER IDK WHY I DID THIS PART)
