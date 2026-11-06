@@ -120,7 +120,7 @@ def game():
                 running = False
 
     # fill the screen with a color to wipe away anything from last frame
-        screen.fill("purple")
+        screen.fill("#15AA1A")
 
     # RENDER YOUR GAME HERE
 
