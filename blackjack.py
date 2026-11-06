@@ -112,8 +112,7 @@ def game():
     pg.init()
     screen = pg.display.set_mode((1280,720))
     pg.display.set_caption('BlackJack')
-    icon = pg.image.load("assets/cards/IndividualCards/AS.png")
-    pg.display.set_icon(icon)
+    pg.display.set_icon(pg.image.load("assets/cards/IndividualCards/AS.png"))
     clock = pg.time.Clock()
     running=True
 
