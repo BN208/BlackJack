@@ -16,6 +16,8 @@ dealer = []
 dealertotal = [0,0]
 playertotal = [0,0]
 
+money = 100 #sets starting money
+
 def FormatCard(tcard): #format as card[[minimum value,maximum value], Name, Suit(1st letter)]
     card=[]
     if (tcard[1] == 1):
@@ -99,16 +101,19 @@ dealertotal = calcTotal(dealer)
 playertotal = calcTotal(hand)
 
 def tkpg(): #tkinter initialises pygame and then closes
-    print("working for now!")
+    #print("working for now!")
     global root
     root.destroy()
     game()
 
 
 def game():
-    print("Game")
+    #print("Game")
     pg.init()
     screen = pg.display.set_mode((1280,720))
+    pg.display.set_caption('BlackJack')
+    icon = pg.image.load("assets/cards/IndividualCards/AS.png")
+    pg.display.set_icon(icon)
     clock = pg.time.Clock()
     running=True
 
@@ -123,7 +128,6 @@ def game():
         screen.fill("#15AA1A")
 
     # RENDER YOUR GAME HERE
-
     # flip() the display to put your work on screen
         pg.display.flip()
 
@@ -132,7 +136,7 @@ def game():
     pg.quit()
 
 
-#---TKinter---#
+#---TKinter---# (I HATE TKINTER IDK WHY I DID THIS PART)
 root = Tk()
 
 #styles
