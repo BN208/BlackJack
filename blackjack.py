@@ -126,7 +126,7 @@ def game():
     running=True
 
     ##buttons
-    BetButton = button(100, 100, 100, 50, "BET: " + str(betVal), font)
+    BetButton = button(100, 100, 100, 50, "BET: " + str(betVal), font, lambda: None)
     AddButton = button(210, 100, 50, 50, "+", font, lambda: addBet(10, BetButton))
     SubButton = button(40, 100, 50, 50, "-", font, lambda: addBet(-10, BetButton))
 
