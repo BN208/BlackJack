@@ -102,18 +102,17 @@ dealertotal = calcTotal(dealer)
 playertotal = calcTotal(hand)
 
 def tkpg(): #tkinter initialises pygame and then closes
-    #print("working for now!")
     global root
     root.destroy()
     game()
 
-def addBet(val):
-    global betVal
-    global money
-    if (money >= val) and (betVal > 0):
+def addBet(val, BetButton):
+    global betVal, money
+
+    if betVal + val >= 0 and (val <= 0 or money >= val):
         betVal += val
         money += (-1*val)
-
+        BetButton.text = "BET: " + str(betVal)
 
 def game():
     global money
@@ -128,8 +127,8 @@ def game():
 
     ##buttons
     BetButton = button(100, 100, 100, 50, "BET: " + str(betVal), font)
-    AddButton = button(210, 100, 50, 50, "+", font, addBet(10))
-    SubButton = button(40, 100, 50, 50, "-", font, addBet(-10))
+    AddButton = button(210, 100, 50, 50, "+", font, lambda: addBet(10, BetButton))
+    SubButton = button(40, 100, 50, 50, "-", font, lambda: addBet(-10, BetButton))
 
     while running:
     # poll for events
@@ -137,6 +136,8 @@ def game():
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 running = False
+            AddButton.handle_event(event)
+            SubButton.handle_event(event)
 
     # fill the screen with a color to wipe away anything from last frame
         screen.fill("#15AA1A")
