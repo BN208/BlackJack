@@ -13,7 +13,7 @@
     justify-content: space-between; /* Pushes brand left, controls right */
     align-items: center;
     background-color: #116305; /* Slightly darker green for contrast */
-    padding: 12px 24px;
+    padding: 10px 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 
@@ -28,7 +28,7 @@
 .nav-links {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 10px;
 }
 
 .title {
@@ -42,7 +42,7 @@
     font-size: 1rem;
     font-weight: bold;
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
     cursor: pointer;
     background-color: #ffffff;
     color: #116305;
@@ -73,7 +73,7 @@
     display: none; /* This hides it by default */
     position: absolute;
     top: calc(100% + 12px);
-    left: 0;
+    left: 5;
     background-color: #116305;
     padding: 16px;
     border-radius: 6px;
@@ -84,4 +84,81 @@
 
 .dropdown-menu.show {
     display: block; /* This reveals it when clicked */
+}
+
+#login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#leaderboard {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centers child elements including the table */
+    gap: 12px;
+    margin: 2% 20%;
+}
+
+#lbtext {
+    text-align: center;
+    margin: 0;
+}
+
+#lbtable {
+    width: 70%;
+    margin: 0 auto;
+    border-collapse: collapse; /* Merges cell borders into clean single white lines */
+    background-color: #116305; /* Matches your navbar */
+    color: #FFFFFF;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35); /* Matches navbar depth */
+    border: 2px solid #FFFFFF;
+}
+
+/* White borders and padding for all header and data cells */
+#lbtable th,
+#lbtable td {
+    border: 1px solid #FFFFFF;
+    padding: 10px 14px;
+}
+
+.lbtableheader {
+    text-align: center;
+    background-color: #0d4d04; /* Slightly deeper green for the header row */
+    font-weight: bold;
+}
+
+/* Column 1: Rank (narrow & centered) */
+#lbtable th:nth-child(1),
+#lbtable td:nth-child(1),
+#lbtableRank {
+    width: 15%;
+    text-align: center;
+}
+
+/* Column 2: Username (wide middle column) */
+#lbtable th:nth-child(2),
+#lbtable td:nth-child(2) {
+    width: 60%;
+    text-align: center;
+}
+
+/* Column 3: Money/Balance (narrow & right-aligned) */
+#lbtable th:nth-child(3),
+#lbtable td:nth-child(3) {
+    width: 25%;
+    text-align: center;
+}
+#signup {
+    padding:3px;
+}
+.txtIn {
+    padding: 5px 10px;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #ffffff;
+    color: #116305;
 }
