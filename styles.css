@@ -1,0 +1,52 @@
+.body {
+    margin: 0; /* Removes default white/green gap around the edges */
+    background: #198e07;
+    color: #FFFFFF;
+    font-family: sans-serif;
+}
+
+.navbar {
+    position: sticky; /* Sticks to the top when scrolling */
+    top: 0;
+    z-index: 1000; /* Keeps it above cards and other elements */
+    display: flex;
+    justify-content: space-between; /* Pushes brand left, controls right */
+    align-items: center;
+    background-color: #116305; /* Slightly darker green for contrast */
+    padding: 12px 24px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.nav-brand {
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.title {
+    background: #198e07;
+    text-align: center;
+    color: #FFFFFF;
+}
+.button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #ffffff;
+    color: #116305;
+}
+
+.button:hover {
+    background-color: #e2e2e2;
+}
+#tagline {
+    text-align: center;
+}

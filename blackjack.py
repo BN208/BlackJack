@@ -1,16 +1,14 @@
 #---IMPORTS--#
-import random
-from tkinter import *
-from pathlib import Path
+import random; from pathlib import Path
 
 #---SETUP---#
 assets_dir = Path(__file__).resolve().parent / "assets"
 
-deck = []
-hand = []
-dealer = []
-dealertotal = [0,0]
-playertotal = [0,0]
+#deck = []
+#hand = []
+#dealer = []
+#dealertotal = [0,0]
+#playertotal = [0,0]
 
 def FormatCard(tcard): #format as card[[minimum value,maximum value], Name, Suit(1st letter)]
     card=[]
