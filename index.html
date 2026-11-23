@@ -1,22 +1,36 @@
 <html>
     <head>
         <title>BlackJack</title>
-        <link rel="icon" href="assets/cards/IndividualCards/AS.png"/>
+        <link rel="icon" src="assets/cards/IndividualCards/AS.png"/>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Silkscreen:wght@400;700&display=swap">
+        <script src="script.js" defer></script>
         <link rel="stylesheet" href="styles.css"/>
     </head>
     <body class="body">
         <div class = "navbar">
-            <span class="navbrand">BlackJack</span>
             <div class="nav-links">
-                <button class="button" id="signin">Sign In</button>
+                <div class="dropdown">
+                    <button class="button" id="signin">Sign In</button>
+                    <div class="dropdown-menu" id="signin-dropdown">
+                        <form id="login-form">
+                            <input type="text" id="username" placeholder="Username" required />
+                            <input type="password" id="password" placeholder="Password" required />
+                            <button type="submit" class="button">Log In</button>
+                        </form>
+                    </div>
+                </div>
+                <span class="nav-brand">BlackJack</span>
+            </div>
+            <div class="nav-links">
                 <button class="button" id="join">Join Game</button>
                 <button class="button" id="new">New Game</button>
                 <span id="balance">balance: £100</span>
             </div>
         </div>
         <h1 class="title">BlackJack</h1>
-        <div id="mainimages">
-            
+        <div id="mainimagediv">
+            <img class="mainimage" src="assets/cards/IndividualCards/AS.png"/>
+            <img class="mainimage" src="assets/cards/IndividualCards/KH.png"/>
         </div>
         <p id="tagline">
             BlackJack - Made by Ben (it's shite)
