@@ -38,6 +38,28 @@
                     </div>
                 </div>
                 <span id="balance">balance: £---</span>
+                <button type="button" class="button small-btn" id="admin-console-btn" style="display: none;">Admin</button>
+            </div>
+        </div>
+
+        <div id="admin-console" class="admin-console" style="display: none;" aria-label="Admin console">
+            <div class="admin-console-header">
+                <h2>Admin Console</h2>
+                <button type="button" class="button small-btn" id="admin-console-close">Close</button>
+            </div>
+            <div id="admin-signups-state" class="admin-signups-state"></div>
+            <div class="admin-table-wrap">
+                <table id="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Balance</th>
+                            <th>Admin</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-table-body"></tbody>
+                </table>
             </div>
         </div>
 
@@ -66,56 +88,69 @@
             </div>
         </div>
 
-        <!-- GAME ROOM VIEW (Hidden until Create/Join Game) -->
+        <!-- GAME ROOM VIEW -->
         <div id="game-view" style="display: none;">
             <div id="game-arena">
-                <!-- Top-Left Room Info -->
+                <!-- Top-Left Room Info & Max Players -->
                 <div id="room-badge">
-                    <span>Room: <strong id="room-code-display">-----</strong></span>
-                    <button type="button" class="button small-btn" id="leave-room-btn">Leave</button>
+                    <div class="badge-row">
+                        <span>Code: <strong id="room-code-display">-----</strong></span>
+                        <span id="player-count-display">(1/5 Max)</span>
+                        <button type="button" class="button small-btn" id="leave-room-btn">Leave</button>
+                    </div>
+                    <div class="shoe-info" id="shoe-info">6-Deck Shoe: 312 cards left</div>
                 </div>
+
+                <!-- Center Status Banner -->
+                <div id="game-status-banner">Place your bets!</div>
 
                 <!-- Automated Server-Side Dealer (Top Center) -->
                 <div class="seat dealer-seat" id="dealer-seat">
-                    <div class="seat-label">Dealer</div>
-                    <div class="card-hand" id="dealer-cards">
-                        <img class="hand-card" src="assets/cards/IndividualCards/AS.png" />
-                        <img class="hand-card" src="assets/cards/IndividualCards/KH.png" />
-                    </div>
+                    <div class="seat-label" id="dealer-label">Dealer</div>
+                    <div class="card-hand" id="dealer-cards"></div>
                 </div>
 
-                <!-- Up to 5 Player Seats Arranged in a Semicircle -->
-                <div class="seat player-seat" id="seat-1">
-                    <div class="seat-label" id="seat-1-name">Empty Seat</div>
+                <!-- Dynamic Player Seats (Hidden when empty, repositioned via JS) -->
+                <div class="seat player-seat" id="seat-0" style="display: none;">
+                    <div class="seat-label" id="seat-0-name"></div>
+                    <div class="card-hand" id="seat-0-cards"></div>
+                    <div class="seat-sub" id="seat-0-info"></div>
+                </div>
+
+                <div class="seat player-seat" id="seat-1" style="display: none;">
+                    <div class="seat-label" id="seat-1-name"></div>
                     <div class="card-hand" id="seat-1-cards"></div>
+                    <div class="seat-sub" id="seat-1-info"></div>
                 </div>
 
-                <div class="seat player-seat" id="seat-2">
-                    <div class="seat-label" id="seat-2-name">Empty Seat</div>
+                <div class="seat player-seat" id="seat-2" style="display: none;">
+                    <div class="seat-label" id="seat-2-name"></div>
                     <div class="card-hand" id="seat-2-cards"></div>
+                    <div class="seat-sub" id="seat-2-info"></div>
                 </div>
 
-                <div class="seat player-seat" id="seat-3">
-                    <div class="seat-label" id="seat-3-name">Empty Seat</div>
+                <div class="seat player-seat" id="seat-3" style="display: none;">
+                    <div class="seat-label" id="seat-3-name"></div>
                     <div class="card-hand" id="seat-3-cards"></div>
+                    <div class="seat-sub" id="seat-3-info"></div>
                 </div>
 
-                <div class="seat player-seat" id="seat-4">
-                    <div class="seat-label" id="seat-4-name">Empty Seat</div>
+                <div class="seat player-seat" id="seat-4" style="display: none;">
+                    <div class="seat-label" id="seat-4-name"></div>
                     <div class="card-hand" id="seat-4-cards"></div>
-                </div>
-
-                <div class="seat player-seat" id="seat-5">
-                    <div class="seat-label" id="seat-5-name">Empty Seat</div>
-                    <div class="card-hand" id="seat-5-cards"></div>
+                    <div class="seat-sub" id="seat-4-info"></div>
                 </div>
 
                 <!-- Bottom Action Controls -->
                 <div id="player-controls">
-                    <input type="number" class="txtIn" id="bet-input" placeholder="Bet (£)" min="1" value="10" />
-                    <button type="button" class="button" id="bet-btn">Place Bet</button>
-                    <button type="button" class="button" id="hit-btn">Hit</button>
-                    <button type="button" class="button" id="stand-btn">Stand</button>
+                    <div id="bet-controls">
+                        <input type="number" class="txtIn" id="bet-input" placeholder="Bet (£)" min="1" value="10" />
+                        <button type="button" class="button" id="bet-btn">Place Bet</button>
+                    </div>
+                    <div id="action-controls" style="display: none;">
+                        <button type="button" class="button" id="twist-btn">Twist</button>
+                        <button type="button" class="button" id="stick-btn">Stick</button>
+                    </div>
                 </div>
             </div>
         </div>

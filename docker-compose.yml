@@ -1,0 +1,50 @@
+services:
+  blackjack:
+    build: .
+    container_name: blackjack
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      BLACKJACK_SECRET_KEY: ${BLACKJACK_SECRET_KEY}
+      ADMIN_USERNAME: ${ADMIN_USERNAME}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      SIGNUPS_ENABLED: "0"
+      COOKIE_SECURE: ${COOKIE_SECURE:-0}
+    volumes:
+      - blackjack-data:/data
+    x-casaos:
+      envs:
+        - container: BLACKJACK_SECRET_KEY
+          description: Random secret used to sign login sessions
+        - container: ADMIN_USERNAME
+          description: Owner account username
+        - container: ADMIN_PASSWORD
+          description: Owner account password
+      ports:
+        - container: "3000"
+          description: Blackjack web interface
+      volumes:
+        - container: /data
+          description: Persistent account database
+
+x-casaos:
+  architectures:
+    - amd64
+    - arm64
+  main: blackjack
+  author: self
+  category: Games
+  developer: Ben
+  index: /admin
+  port_map: "3000"
+  description:
+    en_us: Private multiplayer Blackjack served through CasaOS.
+  icon: https://raw.githubusercontent.com/BN208/BlackJack/main/assets/cards/IndividualCards/AS.png
+  tagline:
+    en_us: Private multiplayer Blackjack
+  title:
+    en_us: BlackJack
+
+volumes:
+  blackjack-data:
