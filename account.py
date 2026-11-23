@@ -1,21 +1,38 @@
-import hashlib
+import hashlib; import sqlite3
 
 def hash_password(password):
-    return hashlib.sha256(password.encode()).hexdigest()
+    return str(hashlib.sha256(password.encode()).hexdigest())
 
-def store_password(username, password):
-    file = open("account.txt", "a")
-    file.write(f"{username}:{hash_password(password)}\n")
-    file.close()
+def store_details(username, password):
+    db = sqlite3.connect("account.db")
+    cursor = db.cursor()
+    cursor.execute("INSERT INTO account (username, password) VALUES (?, ?)", (username, str(hash_password(password))))
+    db.commit()
+    db.close()
 
 def verify_password(username, password):
     hashed_password = hash_password(password)
-    file = open("account.txt", "r")
-    for line in file:
-        if username in line:
-            stored_username, stored_hashed_password = line.strip().split(":")
-            if stored_username == username and stored_hashed_password == hashed_password:
-                file.close()
-                return True
-    file.close()
-    return False
+    username = username
+    db = sqlite3.connect("account.db")
+    cursor = db.cursor()
+    cursor.execute("SELECT password FROM Account WHERE username = ?", (username,))
+    x = cursor.fetchone()
+    if x is not None and str(x[0]) == hashed_password:
+        db.close()
+        return True
+    else:
+        db.close()
+        return False
+    
+    
+def check_account(username):
+    db = sqlite3.connect("account.db")
+    cursor = db.cursor()
+    cursor.execute("SELECT username FROM Account WHERE username = ?", (username,))
+    x = cursor.fetchone()
+    if x is not None:
+        db.close()
+        return False
+    else:
+        db.close()
+        return True
