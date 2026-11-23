@@ -1,18 +1,18 @@
 .body {
-    margin: 0; /* Removes default white/green gap around the edges */
+    margin: 0;
     background: #198e07;
     color: #FFFFFF;
     font-family: sans-serif;
 }
 
 .navbar {
-    position: sticky; /* Sticks to the top when scrolling */
+    position: sticky;
     top: 0;
-    z-index: 1000; /* Keeps it above cards and other elements */
+    z-index: 1000;
     display: flex;
-    justify-content: space-between; /* Pushes brand left, controls right */
+    justify-content: space-between;
     align-items: center;
-    background-color: #116305; /* Slightly darker green for contrast */
+    background-color: #116305;
     padding: 10px 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
@@ -37,6 +37,7 @@
     text-align: center;
     color: #FFFFFF;
 }
+
 .button {
     padding: 10px 20px;
     font-size: 1rem;
@@ -51,9 +52,16 @@
 .button:hover {
     background-color: #e2e2e2;
 }
+
+.small-btn {
+    padding: 5px 10px;
+    font-size: 0.85rem;
+}
+
 #tagline {
     text-align: center;
 }
+
 #mainimagediv {
     display: flex;
     justify-content: center;
@@ -64,16 +72,23 @@
 .mainimage {
     height: 180px;
     width: auto;
+    image-rendering: pixelated;
 }
 
 .mainimage:not(:first-child) {
     margin-left: -45px;
 }
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
 .dropdown-menu {
-    display: none; /* This hides it by default */
+    display: none;
     position: absolute;
     top: calc(100% + 12px);
-    left: 5;
+    left: 5px;
     background-color: #116305;
     padding: 16px;
     border-radius: 6px;
@@ -82,20 +97,33 @@
     min-width: 220px;
 }
 
-.dropdown-menu.show {
-    display: block; /* This reveals it when clicked */
+.dropdown-right {
+    left: auto;
+    right: 0;
 }
 
-#login-form {
+.dropdown-menu.show {
+    display: block;
+}
+
+#login-form,
+#game-menu,
+#join-form {
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
 
+.menu-divider {
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.3);
+    margin: 4px 0;
+}
+
 #leaderboard {
     display: flex;
     flex-direction: column;
-    align-items: center; /* Centers child elements including the table */
+    align-items: center;
     gap: 12px;
     margin: 2% 20%;
 }
@@ -108,14 +136,13 @@
 #lbtable {
     width: 70%;
     margin: 0 auto;
-    border-collapse: collapse; /* Merges cell borders into clean single white lines */
-    background-color: #116305; /* Matches your navbar */
+    border-collapse: collapse;
+    background-color: #116305;
     color: #FFFFFF;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35); /* Matches navbar depth */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
     border: 2px solid #FFFFFF;
 }
 
-/* White borders and padding for all header and data cells */
 #lbtable th,
 #lbtable td {
     border: 1px solid #FFFFFF;
@@ -124,11 +151,10 @@
 
 .lbtableheader {
     text-align: center;
-    background-color: #0d4d04; /* Slightly deeper green for the header row */
+    background-color: #0d4d04;
     font-weight: bold;
 }
 
-/* Column 1: Rank (narrow & centered) */
 #lbtable th:nth-child(1),
 #lbtable td:nth-child(1),
 #lbtableRank {
@@ -136,29 +162,138 @@
     text-align: center;
 }
 
-/* Column 2: Username (wide middle column) */
 #lbtable th:nth-child(2),
 #lbtable td:nth-child(2) {
     width: 60%;
     text-align: center;
 }
 
-/* Column 3: Money/Balance (narrow & right-aligned) */
 #lbtable th:nth-child(3),
 #lbtable td:nth-child(3) {
     width: 25%;
     text-align: center;
 }
+
 #signup {
-    padding:3px;
+    padding: 3px;
 }
+
 .txtIn {
     padding: 5px 10px;
     font-size: 1rem;
     font-weight: bold;
     border: none;
     border-radius: 5px;
-    cursor: pointer;
     background-color: #ffffff;
     color: #116305;
+}
+
+/* --- GAME ROOM LAYOUT --- */
+#game-arena {
+    position: relative;
+    width: 100%;
+    height: calc(100vh - 60px);
+    overflow: hidden;
+}
+
+#room-badge {
+    position: absolute;
+    top: 16px;
+    left: 20px;
+    background-color: #116305;
+    padding: 10px 14px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.75rem;
+}
+
+.seat {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    transform: translate(-50%, -50%);
+}
+
+.seat-label {
+    background-color: #116305;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.card-hand {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 115px;
+}
+
+.hand-card {
+    height: 115px;
+    width: auto;
+    image-rendering: pixelated;
+}
+
+.hand-card:not(:first-child) {
+    margin-left: -32px;
+}
+
+/* Dealer at Top Center */
+.dealer-seat {
+    top: 16%;
+    left: 50%;
+}
+
+/* 5 Player Seats Arranged in a Circle / Semicircle Around Dealer */
+#seat-1 {
+    top: 34%;
+    left: 14%;
+}
+
+#seat-2 {
+    top: 63%;
+    left: 25%;
+}
+
+#seat-3 {
+    top: 72%;
+    left: 50%;
+}
+
+#seat-4 {
+    top: 63%;
+    left: 75%;
+}
+
+#seat-5 {
+    top: 34%;
+    left: 86%;
+}
+
+/* Bottom Action Bar */
+#player-controls {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background-color: #116305;
+    padding: 12px 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+#bet-input {
+    width: 90px;
 }

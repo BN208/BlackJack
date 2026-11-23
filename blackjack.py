@@ -1,5 +1,5 @@
 #---IMPORTS--#
-import random; from pathlib import Path
+import random; from pathlib import Path;
 
 #---SETUP---#
 assets_dir = Path(__file__).resolve().parent / "assets"

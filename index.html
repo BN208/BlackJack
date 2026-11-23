@@ -1,13 +1,14 @@
+<!DOCTYPE html>
 <html>
     <head>
         <title>BlackJack</title>
-        <link rel="icon" src="assets/cards/IndividualCards/AS.png"/>
+        <link rel="icon" href="assets/cards/IndividualCards/AS.png"/>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Silkscreen:wght@400;700&display=swap">
         <script src="client.js" defer></script>
         <link rel="stylesheet" href="styles.css"/>
     </head>
     <body class="body">
-        <div class = "navbar">
+        <div class="navbar">
             <div class="nav-links">
                 <div class="dropdown">
                     <button class="button" id="signin">Sign In</button>
@@ -23,30 +24,100 @@
                 <span class="nav-brand">BlackJack</span>
             </div>
             <div class="nav-links">
-                <button class="button" id="startBtn">Start Game!</button>
+                <div class="dropdown">
+                    <button class="button" id="startBtn">Start Game!</button>
+                    <div class="dropdown-menu dropdown-right" id="start-dropdown">
+                        <div id="game-menu">
+                            <button type="button" class="button" id="create-game-btn">New Game</button>
+                            <hr class="menu-divider" />
+                            <form id="join-form">
+                                <input type="text" class="txtIn" id="game-code-input" placeholder="Enter Game Code" maxlength="6" required />
+                                <button type="submit" class="button" id="join-game-btn">Join Game</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
                 <span id="balance">balance: £---</span>
             </div>
         </div>
-        <h1 class="title">BlackJack</h1>
-        <div id="mainimagediv">
-            <img class="mainimage" src="assets/cards/IndividualCards/AS.png"/>
-            <img class="mainimage" src="assets/cards/IndividualCards/KH.png"/>
+
+        <!-- LANDING PAGE VIEW -->
+        <div id="home-view">
+            <h1 class="title">BlackJack</h1>
+            <div id="mainimagediv">
+                <img class="mainimage" src="assets/cards/IndividualCards/AS.png"/>
+                <img class="mainimage" src="assets/cards/IndividualCards/KH.png"/>
+            </div>
+            <p id="tagline">
+                BlackJack - Made by Ben (it's shite)
+            </p>
+            <div id="leaderboard">
+                <h2 id="lbtext">LeaderBoard: Top 10</h2>
+                <table id="lbtable">
+                    <thead>
+                        <tr>
+                            <th id="lbtableRank">Rank</th>
+                            <th>Username</th>
+                            <th>Money</th>
+                        </tr>
+                    </thead>
+                    <tbody id="lb-body"></tbody>
+                </table>
+            </div>
         </div>
-        <p id="tagline">
-            BlackJack - Made by Ben (it's shite)
-        </p>
-        <div id="leaderboard">
-            <h2 id="lbtext">LeaderBoard: Top 10</h2>
-            <table id="lbtable">
-                <thead>
-                    <tr>
-                        <th id="lbtableRank">Rank</th>
-                        <th>Username</th>
-                        <th>Money</th>
-                    </tr>
-                </thead>
-                <tbody id="lb-body"></tbody>
-            </table>
+
+        <!-- GAME ROOM VIEW (Hidden until Create/Join Game) -->
+        <div id="game-view" style="display: none;">
+            <div id="game-arena">
+                <!-- Top-Left Room Info -->
+                <div id="room-badge">
+                    <span>Room: <strong id="room-code-display">-----</strong></span>
+                    <button type="button" class="button small-btn" id="leave-room-btn">Leave</button>
+                </div>
+
+                <!-- Automated Server-Side Dealer (Top Center) -->
+                <div class="seat dealer-seat" id="dealer-seat">
+                    <div class="seat-label">Dealer</div>
+                    <div class="card-hand" id="dealer-cards">
+                        <img class="hand-card" src="assets/cards/IndividualCards/AS.png" />
+                        <img class="hand-card" src="assets/cards/IndividualCards/KH.png" />
+                    </div>
+                </div>
+
+                <!-- Up to 5 Player Seats Arranged in a Semicircle -->
+                <div class="seat player-seat" id="seat-1">
+                    <div class="seat-label" id="seat-1-name">Empty Seat</div>
+                    <div class="card-hand" id="seat-1-cards"></div>
+                </div>
+
+                <div class="seat player-seat" id="seat-2">
+                    <div class="seat-label" id="seat-2-name">Empty Seat</div>
+                    <div class="card-hand" id="seat-2-cards"></div>
+                </div>
+
+                <div class="seat player-seat" id="seat-3">
+                    <div class="seat-label" id="seat-3-name">Empty Seat</div>
+                    <div class="card-hand" id="seat-3-cards"></div>
+                </div>
+
+                <div class="seat player-seat" id="seat-4">
+                    <div class="seat-label" id="seat-4-name">Empty Seat</div>
+                    <div class="card-hand" id="seat-4-cards"></div>
+                </div>
+
+                <div class="seat player-seat" id="seat-5">
+                    <div class="seat-label" id="seat-5-name">Empty Seat</div>
+                    <div class="card-hand" id="seat-5-cards"></div>
+                </div>
+
+                <!-- Bottom Action Controls -->
+                <div id="player-controls">
+                    <input type="number" class="txtIn" id="bet-input" placeholder="Bet (£)" min="1" value="10" />
+                    <button type="button" class="button" id="bet-btn">Place Bet</button>
+                    <button type="button" class="button" id="hit-btn">Hit</button>
+                    <button type="button" class="button" id="stand-btn">Stand</button>
+                </div>
+            </div>
         </div>
     </body>
 </html>
