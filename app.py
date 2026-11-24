@@ -19,9 +19,9 @@ app.config.update(
     SESSION_COOKIE_SECURE=os.environ.get("COOKIE_SECURE", "0").strip().lower() in ("1", "true", "yes")
 )
 
-SIGNUPS_ENABLED = os.environ.get("SIGNUPS_ENABLED", "0").strip().lower() in ("1", "true", "yes")
+SIGNUPS_ENABLED_DEFAULT = os.environ.get("SIGNUPS_ENABLED", "0").strip().lower() in ("1", "true", "yes")
 
-account.init_db()
+account.init_db(signups_enabled=SIGNUPS_ENABLED_DEFAULT)
 
 games = {}  # code -> { "table": BlackjackTable, "last_active": float }
 ROOM_TIMEOUT = 300
@@ -62,6 +62,10 @@ def admin_required(view):
     return wrapped
 
 
+def signups_enabled():
+    return account.get_setting("signups_enabled", "0") == "1"
+
+
 @app.route('/')
 def home():
     return send_from_directory('.', 'index.html')
@@ -92,7 +96,7 @@ def login():
 
 @app.route('/api/signup', methods=['POST'])
 def signup():
-    if not SIGNUPS_ENABLED:
+    if not signups_enabled():
         return jsonify({'success': False, 'error': 'Signups are disabled'}), 403
     data = request.get_json()
     username = data.get('username', '').strip()
@@ -278,7 +282,22 @@ def leave_game():
 @app.route('/api/admin/accounts', methods=['GET'])
 @admin_required
 def admin_accounts():
-    return jsonify({"success": True, "accounts": account.get_accounts(), "signups_enabled": SIGNUPS_ENABLED})
+    return jsonify({
+        "success": True,
+        "accounts": account.get_accounts(),
+        "signups_enabled": signups_enabled()
+    })
+
+
+@app.route('/api/admin/settings/signups', methods=['POST'])
+@admin_required
+def admin_set_signups():
+    data = request.get_json() or {}
+    enabled = data.get("enabled")
+    if not isinstance(enabled, bool):
+        return jsonify({"success": False, "error": "enabled must be true or false"}), 400
+    account.set_setting("signups_enabled", "1" if enabled else "0")
+    return jsonify({"success": True, "signups_enabled": enabled})
 
 
 @app.route('/api/admin/accounts/money', methods=['POST'])

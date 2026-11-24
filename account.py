@@ -10,7 +10,7 @@ def get_db_path():
     os.makedirs(parent, exist_ok=True)
     return path
 
-def init_db():
+def init_db(signups_enabled=False):
     db = sqlite3.connect(get_db_path())
     cursor = db.cursor()
     cursor.execute("""
@@ -21,6 +21,16 @@ def init_db():
             is_admin INTEGER DEFAULT 0
         )
     """)
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS AppSettings (
+            setting TEXT PRIMARY KEY,
+            value TEXT NOT NULL
+        )
+    """)
+    cursor.execute(
+        "INSERT OR IGNORE INTO AppSettings (setting, value) VALUES (?, ?)",
+        ("signups_enabled", "1" if signups_enabled else "0")
+    )
     columns = {row[1] for row in cursor.execute("PRAGMA table_info(Account)").fetchall()}
     if "is_admin" not in columns:
         cursor.execute("ALTER TABLE Account ADD COLUMN is_admin INTEGER DEFAULT 0")
@@ -154,5 +164,24 @@ def delete_account(username):
     db = sqlite3.connect(get_db_path())
     cursor = db.cursor()
     cursor.execute("DELETE FROM Account WHERE username = ?", (username,))
+    db.commit()
+    db.close()
+
+def get_setting(setting, default=None):
+    db = sqlite3.connect(get_db_path())
+    cursor = db.cursor()
+    cursor.execute("SELECT value FROM AppSettings WHERE setting = ?", (setting,))
+    row = cursor.fetchone()
+    db.close()
+    return row[0] if row else default
+
+def set_setting(setting, value):
+    db = sqlite3.connect(get_db_path())
+    cursor = db.cursor()
+    cursor.execute(
+        "INSERT INTO AppSettings (setting, value) VALUES (?, ?) "
+        "ON CONFLICT(setting) DO UPDATE SET value = excluded.value",
+        (setting, str(value))
+    )
     db.commit()
     db.close()

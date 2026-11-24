@@ -39,6 +39,8 @@ const adminConsoleBtn = document.getElementById('admin-console-btn');
 const adminConsole = document.getElementById('admin-console');
 const adminConsoleClose = document.getElementById('admin-console-close');
 const adminTableBody = document.getElementById('admin-table-body');
+const adminSignupsState = document.getElementById('admin-signups-state');
+const adminSignupsToggle = document.getElementById('admin-signups-toggle');
 
 // Semicircle seat coordinates based on exact number of active players (no empty seats shown)
 const SEAT_LAYOUTS = {
@@ -85,6 +87,7 @@ signInBtn.addEventListener('click', async (e) => {
 startBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     dropdown.classList.remove('show');
+    adminConsole.style.display = 'none';
     startDropdown.classList.toggle('show');
 });
 
@@ -413,8 +416,9 @@ async function loadAdminAccounts() {
         return;
     }
 
-    document.getElementById('admin-signups-state').textContent =
-        `Public signups: ${data.signups_enabled ? 'enabled' : 'disabled'}`;
+    adminSignupsState.textContent =
+        `Public signups are ${data.signups_enabled ? 'enabled' : 'disabled'}.`;
+    adminSignupsToggle.textContent = data.signups_enabled ? 'Disable Signups' : 'Enable Signups';
     adminTableBody.innerHTML = '';
 
     data.accounts.forEach((account) => {
@@ -496,6 +500,26 @@ adminConsoleBtn.addEventListener('click', async () => {
 
 adminConsoleClose.addEventListener('click', () => {
     adminConsole.style.display = 'none';
+});
+
+adminSignupsToggle.addEventListener('click', async () => {
+    adminSignupsToggle.disabled = true;
+    try {
+        const currentlyEnabled = adminSignupsToggle.textContent === 'Disable Signups';
+        const response = await fetch('/api/admin/settings/signups', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ enabled: !currentlyEnabled })
+        });
+        const result = await response.json();
+        if (!result.success) {
+            alert(result.error);
+            return;
+        }
+        await loadAdminAccounts();
+    } finally {
+        adminSignupsToggle.disabled = false;
+    }
 });
 
 async function init() {

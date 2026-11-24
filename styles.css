@@ -377,6 +377,18 @@
     margin: 0 0 12px;
 }
 
+.admin-signups-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.admin-signups-state {
+    margin: 0;
+}
+
 .admin-table-wrap {
     overflow-x: auto;
 }
@@ -403,4 +415,260 @@
 
 .admin-money-input {
     width: 90px;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+img {
+    max-width: 100%;
+}
+
+@media (max-width: 900px) {
+    .navbar {
+        gap: 8px;
+        padding: 8px 12px;
+    }
+
+    .nav-links {
+        gap: 8px;
+        min-width: 0;
+    }
+
+    .button {
+        padding: 9px 13px;
+        font-size: 0.9rem;
+    }
+
+    #leaderboard {
+        width: min(760px, calc(100% - 32px));
+        margin: 24px auto;
+    }
+
+    #lbtable {
+        width: 100%;
+    }
+
+    #game-arena {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        align-content: start;
+        gap: 12px;
+        height: auto;
+        min-height: calc(100vh - 60px);
+        min-height: calc(100dvh - 60px);
+        overflow: visible;
+        padding: 12px;
+    }
+
+    #room-badge,
+    #game-status-banner,
+    .dealer-seat,
+    #player-controls {
+        position: static;
+        grid-column: 1 / -1;
+        width: 100%;
+        max-width: 100%;
+        transform: none;
+    }
+
+    #room-badge {
+        align-self: start;
+    }
+
+    #game-status-banner {
+        white-space: normal;
+        overflow-wrap: anywhere;
+    }
+
+    .seat.player-seat {
+        position: static !important;
+        top: auto !important;
+        left: auto !important;
+        width: 100%;
+        min-width: 0;
+        transform: none;
+        padding: 8px;
+        border-radius: 8px;
+        background: rgba(17, 99, 5, 0.28);
+    }
+
+    .seat-label {
+        max-width: 100%;
+        white-space: normal;
+        overflow-wrap: anywhere;
+        text-align: center;
+    }
+
+    .card-hand {
+        width: 100%;
+        min-height: 0;
+        flex-wrap: wrap;
+    }
+
+    .hand-card {
+        height: clamp(72px, 12vw, 100px);
+    }
+
+    .hand-card:not(:first-child) {
+        margin-left: -24px;
+    }
+
+    #player-controls {
+        justify-self: center;
+        align-self: end;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 8px;
+        margin-bottom: 4px;
+    }
+}
+
+@media (max-width: 600px) {
+    .navbar {
+        position: sticky;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .nav-links {
+        flex: 1 1 100%;
+        justify-content: space-between;
+    }
+
+    .nav-brand {
+        font-size: 0.78rem;
+    }
+
+    .button {
+        padding: 9px 11px;
+        font-size: 0.82rem;
+    }
+
+    .dropdown-menu {
+        min-width: min(250px, calc(100vw - 24px));
+        max-width: calc(100vw - 24px);
+    }
+
+    .title {
+        font-size: clamp(1.1rem, 6vw, 2rem);
+        overflow-wrap: anywhere;
+    }
+
+    #mainimagediv {
+        padding: 12px 0;
+    }
+
+    .mainimage {
+        height: clamp(105px, 32vw, 150px);
+    }
+
+    .mainimage:not(:first-child) {
+        margin-left: -30px;
+    }
+
+    #tagline {
+        padding: 0 16px;
+        line-height: 1.5;
+    }
+
+    #leaderboard {
+        width: calc(100% - 24px);
+        margin: 20px auto;
+        gap: 10px;
+    }
+
+    #lbtext {
+        font-size: 1.1rem;
+    }
+
+    #lbtable th,
+    #lbtable td {
+        padding: 8px 6px;
+    }
+
+    #game-arena {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 10px;
+        padding: 10px;
+    }
+
+    #room-badge,
+    #game-status-banner,
+    .dealer-seat,
+    #player-controls {
+        grid-column: 1;
+    }
+
+    #room-badge {
+        font-size: 0.62rem;
+        padding: 9px;
+    }
+
+    .badge-row {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    #game-status-banner {
+        font-size: 0.67rem;
+        line-height: 1.5;
+        padding: 8px 12px;
+    }
+
+    .seat.player-seat {
+        padding: 8px 4px;
+    }
+
+    .hand-card {
+        height: clamp(68px, 19vw, 88px);
+    }
+
+    #player-controls {
+        gap: 8px;
+        padding: 10px;
+    }
+
+    #bet-controls,
+    #action-controls {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    #bet-input {
+        width: 100px;
+    }
+
+    .admin-console {
+        top: 112px;
+        right: 8px;
+        bottom: 8px;
+        width: calc(100vw - 16px);
+        padding: 12px;
+    }
+
+    .admin-signups-controls {
+        flex-wrap: wrap;
+    }
+}
+
+@media (max-height: 520px) and (min-width: 601px) {
+    #game-arena {
+        min-height: max(520px, calc(100dvh - 60px));
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
 }

@@ -1,0 +1,27 @@
+# Local secrets and environment configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets/
+account.txt
+
+# Local databases and persistent application data
+*.db
+*.sqlite
+*.sqlite3
+
+# Python-generated files
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# JavaScript dependencies and local tooling output
+node_modules/
+coverage/
+
+# OS metadata
+.DS_Store
+Thumbs.db

@@ -6,9 +6,9 @@ This is a multiplayer Blackjack app in Python, HTML, CSS, and JavaScript.
 2. Set a unique `BLACKJACK_SECRET_KEY`, `ADMIN_USERNAME`, and strong `ADMIN_PASSWORD`.
 3. Start the service with `docker compose up -d --build`.
 4. Open `http://<home-server-ip>:3000`.
-5. Sign in with the configured admin credentials. The **Admin** button provides account balance management and account deletion.
+5. Sign in with the configured admin credentials. The **Admin** button provides account balance management, account deletion, and a public-signup toggle.
 
-Public signups are disabled by default. The `blackjack-data` Docker volume persists `account.db`.
+Public signups default to disabled on a fresh install. An admin can enable them from the console; the setting is stored in the `blackjack-data` Docker volume and survives restarts.
 
 ## CasaOS app menu
 

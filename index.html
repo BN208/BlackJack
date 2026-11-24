@@ -2,6 +2,7 @@
 <html>
     <head>
         <title>BlackJack</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="icon" href="assets/cards/IndividualCards/AS.png"/>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Silkscreen:wght@400;700&display=swap">
         <script src="client.js" defer></script>
@@ -47,7 +48,10 @@
                 <h2>Admin Console</h2>
                 <button type="button" class="button small-btn" id="admin-console-close">Close</button>
             </div>
-            <div id="admin-signups-state" class="admin-signups-state"></div>
+            <div class="admin-signups-controls">
+                <div id="admin-signups-state" class="admin-signups-state"></div>
+                <button type="button" class="button small-btn" id="admin-signups-toggle">Enable Signups</button>
+            </div>
             <div class="admin-table-wrap">
                 <table id="admin-table">
                     <thead>
