@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Connect to BlackJack</title>
+    <style>
+        :root {
+            color-scheme: dark;
+            font-family: system-ui, sans-serif;
+            background: #126407;
+            color: #fff;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            display: grid;
+            min-height: 100vh;
+            margin: 0;
+            padding: 24px;
+            place-items: center;
+        }
+
+        main {
+            width: min(100%, 460px);
+            padding: 28px;
+            border: 1px solid rgba(255, 255, 255, .55);
+            border-radius: 14px;
+            background: #0e4e05;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, .28);
+        }
+
+        h1 { margin: 0 0 10px; font-size: 1.7rem; }
+        p { line-height: 1.5; }
+        label { display: block; margin: 22px 0 8px; font-weight: 650; }
+
+        input, button {
+            width: 100%;
+            min-height: 48px;
+            border: 0;
+            border-radius: 8px;
+            font: inherit;
+        }
+
+        input {
+            padding: 0 12px;
+            background: #fff;
+            color: #172114;
+        }
+
+        button {
+            margin-top: 12px;
+            background: #fff;
+            color: #116305;
+            font-weight: 750;
+            cursor: pointer;
+        }
+
+        button:hover { background: #e7f2e4; }
+        #message { min-height: 1.5em; color: #ffe2aa; }
+    </style>
+</head>
+<body>
+    <main>
+        <h1>BlackJack</h1>
+        <p>Enter the address of the BlackJack server you want to join.</p>
+        <form id="server-form">
+            <label for="server-url">Server address</label>
+            <input id="server-url" name="server-url" type="text"
+                placeholder="https://blackjack.bcull.online" autocomplete="url" required>
+            <button type="submit">Connect</button>
+        </form>
+        <p id="message" role="status" aria-live="polite"></p>
+    </main>
+    <script>
+        const form = document.getElementById('server-form');
+        const addressInput = document.getElementById('server-url');
+        const message = document.getElementById('message');
+        addressInput.value = 'https://blackjack.bcull.online';
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            message.textContent = '';
+            try {
+                await window.blackjackClient.openServer(addressInput.value);
+            } catch (error) {
+                message.textContent = error.message || 'Could not open that server.';
+            }
+        });
+    </script>
+</body>
+</html>

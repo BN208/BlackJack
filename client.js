@@ -28,19 +28,35 @@ const stickBtn = document.getElementById('stick-btn');
 let isSignUpMode = false;
 let isLoggedIn = false;
 let currentUsername = null;
+let currentBalance = null;
 let currentGameCode = null;
 let pollInterval = null;
+let lastObservedGamePhase = null;
 let actionLocked = false;
 let betButtonDisabled = false;
 let betInputDisabled = false;
 let twistButtonDisabled = false;
 let stickButtonDisabled = false;
+let accountApprovalRequired = false;
 const adminConsoleBtn = document.getElementById('admin-console-btn');
 const adminConsole = document.getElementById('admin-console');
 const adminConsoleClose = document.getElementById('admin-console-close');
 const adminTableBody = document.getElementById('admin-table-body');
 const adminSignupsState = document.getElementById('admin-signups-state');
 const adminSignupsToggle = document.getElementById('admin-signups-toggle');
+const adminApprovalState = document.getElementById('admin-approval-state');
+const adminApprovalToggle = document.getElementById('admin-approval-toggle');
+const playerStatsPanel = document.getElementById('player-stats-panel');
+const playerStatFields = {
+    hands: document.getElementById('stat-hands'),
+    wins: document.getElementById('stat-wins'),
+    losses: document.getElementById('stat-losses'),
+    pushes: document.getElementById('stat-pushes'),
+    blackjacks: document.getElementById('stat-blackjacks'),
+    busts: document.getElementById('stat-busts'),
+    wagered: document.getElementById('stat-wagered'),
+    net: document.getElementById('stat-net')
+};
 
 // Semicircle seat coordinates based on exact number of active players (no empty seats shown)
 const SEAT_LAYOUTS = {
@@ -98,9 +114,7 @@ window.addEventListener('click', (e) => {
 
 // --- AUTHENTICATION ---
 toggleModeBtn.addEventListener('click', () => {
-    isSignUpMode = !isSignUpMode;
-    toggleModeBtn.textContent = isSignUpMode ? 'Have an Account? Log In!' : 'No Account? Sign Up!';
-    submitBtn.textContent = isSignUpMode ? 'Sign Up' : 'Log In';
+    setSignUpMode(!isSignUpMode);
 });
 
 loginForm.addEventListener('submit', async (e) => {
@@ -116,40 +130,87 @@ loginForm.addEventListener('submit', async (e) => {
     });
 
     const data = await res.json();
-    if (data.success) {
-        setLoggedInUI(data.username, data.balance);
-        adminConsoleBtn.style.display = data.is_admin ? 'inline-block' : 'none';
-        dropdown.classList.remove('show');
+    if (data.pending_approval) {
+        alert(data.message);
         loginForm.reset();
+        setSignUpMode(false);
+        dropdown.classList.remove('show');
+        return;
+    }
+    if (data.success) {
+        setLoggedInUI(data.username, data.balance, data.is_admin);
+        adminConsoleBtn.style.display = data.is_admin ? 'inline-block' : 'none';
+        startBtn.disabled = data.is_admin;
+        dropdown.classList.remove('show');
+        startDropdown.classList.remove('show');
+        loginForm.reset();
+        setSignUpMode(false);
         loadLeaderboard();
-        if (window.location.pathname === '/admin' && data.is_admin) {
+        if (data.is_admin) {
+            playerStatsPanel.hidden = true;
             adminConsole.style.display = 'block';
             await loadAdminAccounts();
+        } else {
+            playerStatsPanel.hidden = false;
+            await loadPlayerStats();
         }
     } else {
         alert(data.error);
     }
 });
 
-function setLoggedInUI(username, balance) {
+function setSignUpMode(enabled) {
+    isSignUpMode = enabled;
+    toggleModeBtn.textContent = enabled ? 'Have an Account? Log In!' : 'No Account? Sign Up!';
+    submitBtn.textContent = enabled ? 'Sign Up' : 'Log In';
+    const passwordInput = document.getElementById('password');
+    passwordInput.minLength = enabled ? 8 : 0;
+    passwordInput.autocomplete = enabled ? 'new-password' : 'current-password';
+}
+
+function setLoggedInUI(username, balance, isAdmin = false) {
     isLoggedIn = true;
     currentUsername = username;
     signInBtn.textContent = `${username} (Log Out)`;
+    updateBalance(balance);
+    startBtn.disabled = isAdmin;
+}
+
+function updateBalance(balance) {
+    if (typeof balance !== 'number') return;
+    currentBalance = balance;
     balanceSpan.textContent = `balance: £${balance}`;
+    betInput.max = String(Math.max(1, balance));
+    if (balance === 0) {
+        betInput.value = '1';
+    } else if (parseInt(betInput.value, 10) > balance) {
+        betInput.value = String(balance);
+    }
+    if (!betButtonDisabled) {
+        betBtn.textContent = balance === 0 ? '£1 Safety Bet' : 'Place Bet';
+    }
 }
 
 function setLoggedOutUI() {
+    setSignUpMode(false);
     isLoggedIn = false;
     currentUsername = null;
+    currentBalance = null;
     signInBtn.textContent = 'Sign In';
     balanceSpan.textContent = 'balance: £---';
+    betInput.removeAttribute('max');
+    betInput.value = '10';
+    betBtn.textContent = 'Place Bet';
+    startBtn.disabled = false;
     adminConsoleBtn.style.display = 'none';
     adminConsole.style.display = 'none';
+    playerStatsPanel.hidden = true;
 }
 
 // --- ROOM & GAME STATE RENDERING ---
 function openGameRoom(code, state) {
     currentGameCode = code;
+    lastObservedGamePhase = null;
     roomCodeDisplay.textContent = code;
     startDropdown.classList.remove('show');
 
@@ -187,7 +248,7 @@ async function pollRoomState() {
     const data = await res.json();
     if (data.success) {
         if (typeof data.balance === 'number') {
-            balanceSpan.textContent = `balance: £${data.balance}`;
+            updateBalance(data.balance);
         }
         renderGameState(data.state);
     } else {
@@ -219,6 +280,8 @@ function renderCards(containerId, cardCodes) {
 }
 
 function renderGameState(state) {
+    const roundJustFinished = state.phase === 'round_over' && lastObservedGamePhase !== 'round_over';
+    lastObservedGamePhase = state.phase;
     const players = state.players;
     const count = players.length;
 
@@ -273,7 +336,9 @@ function renderGameState(state) {
         const alreadyBet = (state.phase === 'betting' && me.status === 'bet_placed');
         betButtonDisabled = alreadyBet;
         betInputDisabled = alreadyBet;
-        betBtn.textContent = alreadyBet ? 'Bet Placed' : 'Place Bet';
+        betBtn.textContent = alreadyBet
+            ? 'Bet Placed'
+            : currentBalance === 0 ? '£1 Safety Bet' : 'Place Bet';
     } else if (state.phase === 'playing') {
         betControls.style.display = 'none';
         actionControls.style.display = 'flex';
@@ -281,6 +346,9 @@ function renderGameState(state) {
         stickButtonDisabled = !me.is_turn;
     }
     applyActionLockState();
+    if (roundJustFinished && isLoggedIn && !startBtn.disabled) {
+        loadPlayerStats();
+    }
 }
 
 function applyActionLockState() {
@@ -340,7 +408,7 @@ betBtn.addEventListener('click', async () => {
     });
     const data = await res.json();
     if (data.success) {
-        balanceSpan.textContent = `balance: £${data.balance}`;
+        updateBalance(data.balance);
         renderGameState(data.state);
     } else {
         alert(data.error);
@@ -357,7 +425,7 @@ twistBtn.addEventListener('click', async () => {
     });
     const data = await res.json();
     if (data.success) {
-        balanceSpan.textContent = `balance: £${data.balance}`;
+        updateBalance(data.balance);
         renderGameState(data.state);
     } else {
         alert(data.error);
@@ -374,7 +442,7 @@ stickBtn.addEventListener('click', async () => {
     });
     const data = await res.json();
     if (data.success) {
-        balanceSpan.textContent = `balance: £${data.balance}`;
+        updateBalance(data.balance);
         renderGameState(data.state);
     } else {
         alert(data.error);
@@ -399,13 +467,43 @@ async function loadLeaderboard() {
 
     players.forEach((player, index) => {
         const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${index + 1}</td>
-            <td>${player.username}</td>
-            <td>£${player.money}</td>
-        `;
+        const rankCell = document.createElement('td');
+        rankCell.textContent = String(index + 1);
+        const usernameCell = document.createElement('td');
+        usernameCell.textContent = player.username;
+        const moneyCell = document.createElement('td');
+        moneyCell.textContent = `£${player.money}`;
+        row.append(rankCell, usernameCell, moneyCell);
         tbody.appendChild(row);
     });
+}
+
+async function loadPlayerStats() {
+    if (!isLoggedIn || !currentUsername || startBtn.disabled) {
+        playerStatsPanel.hidden = true;
+        return;
+    }
+    const requestedUsername = currentUsername;
+    const res = await fetch('/api/me/stats');
+    const data = await res.json();
+    if (!isLoggedIn || currentUsername !== requestedUsername || startBtn.disabled) return;
+    if (!data.success) {
+        playerStatsPanel.hidden = true;
+        return;
+    }
+
+    const stats = data.stats;
+    playerStatFields.hands.textContent = String(stats.hands_played);
+    playerStatFields.wins.textContent = String(stats.wins);
+    playerStatFields.losses.textContent = String(stats.losses);
+    playerStatFields.pushes.textContent = String(stats.pushes);
+    playerStatFields.blackjacks.textContent = String(stats.blackjacks);
+    playerStatFields.busts.textContent = String(stats.busts);
+    playerStatFields.wagered.textContent = `£${stats.total_wagered}`;
+    playerStatFields.net.textContent = stats.net_profit > 0
+        ? `+£${stats.net_profit}`
+        : stats.net_profit < 0 ? `-£${Math.abs(stats.net_profit)}` : '£0';
+    playerStatsPanel.hidden = false;
 }
 
 async function loadAdminAccounts() {
@@ -419,6 +517,13 @@ async function loadAdminAccounts() {
     adminSignupsState.textContent =
         `Public signups are ${data.signups_enabled ? 'enabled' : 'disabled'}.`;
     adminSignupsToggle.textContent = data.signups_enabled ? 'Disable Signups' : 'Enable Signups';
+    accountApprovalRequired = data.account_approval_required;
+    adminApprovalState.textContent = accountApprovalRequired
+        ? 'New accounts require your approval before they can sign in.'
+        : 'New accounts can sign in as soon as they register.';
+    adminApprovalToggle.textContent = accountApprovalRequired
+        ? 'Stop Requiring Approval'
+        : 'Require Approval';
     adminTableBody.innerHTML = '';
 
     data.accounts.forEach((account) => {
@@ -429,9 +534,21 @@ async function loadAdminAccounts() {
         moneyCell.textContent = `£${account.money}`;
         const adminCell = document.createElement('td');
         adminCell.textContent = account.is_admin ? 'Yes' : 'No';
+        const approvalCell = document.createElement('td');
+        approvalCell.textContent = account.is_admin
+            ? 'Not required'
+            : account.approved ? 'Approved' : 'Pending';
         const actionsCell = document.createElement('td');
         const actionRow = document.createElement('div');
         actionRow.className = 'admin-action-row';
+        let approveButton = null;
+        if (!account.approved && !account.is_admin) {
+            approveButton = document.createElement('button');
+            approveButton.type = 'button';
+            approveButton.className = 'button small-btn admin-approve-account';
+            approveButton.textContent = 'Approve';
+            actionRow.append(approveButton);
+        }
         const moneyInput = document.createElement('input');
         moneyInput.type = 'number';
         moneyInput.className = 'txtIn admin-money-input';
@@ -452,10 +569,26 @@ async function loadAdminAccounts() {
             actionRow.append(deleteButton);
         }
         actionsCell.append(actionRow);
-        row.append(usernameCell, moneyCell, adminCell, actionsCell);
+        row.append(usernameCell, moneyCell, adminCell, approvalCell, actionsCell);
 
         const saveMoneyButton = saveButton;
         const moneyInputElement = moneyInput;
+
+        if (approveButton) {
+            approveButton.addEventListener('click', async () => {
+                const response = await fetch(
+                    `/api/admin/accounts/${encodeURIComponent(account.username)}/approve`,
+                    { method: 'POST' }
+                );
+                const result = await response.json();
+                if (result.success) {
+                    await loadAdminAccounts();
+                    await loadLeaderboard();
+                } else {
+                    alert(result.error);
+                }
+            });
+        }
 
         saveMoneyButton.addEventListener('click', async () => {
             const amount = parseInt(moneyInputElement.value, 10);
@@ -522,16 +655,42 @@ adminSignupsToggle.addEventListener('click', async () => {
     }
 });
 
+adminApprovalToggle.addEventListener('click', async () => {
+    adminApprovalToggle.disabled = true;
+    try {
+        const response = await fetch('/api/admin/settings/account-approval', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ enabled: !accountApprovalRequired })
+        });
+        const result = await response.json();
+        if (!result.success) {
+            alert(result.error);
+            return;
+        }
+        await loadAdminAccounts();
+    } finally {
+        adminApprovalToggle.disabled = false;
+    }
+});
+
 async function init() {
     const res = await fetch('/api/me');
     const data = await res.json();
     if (data.logged_in) {
-        setLoggedInUI(data.username, data.balance);
+        setLoggedInUI(data.username, data.balance, data.is_admin);
         adminConsoleBtn.style.display = data.is_admin ? 'inline-block' : 'none';
-        if (window.location.pathname === '/admin' && data.is_admin) {
+        if (data.is_admin) {
+            playerStatsPanel.hidden = true;
             adminConsole.style.display = 'block';
             await loadAdminAccounts();
+        } else {
+            adminConsole.style.display = 'none';
+            playerStatsPanel.hidden = false;
+            await loadPlayerStats();
         }
+    } else {
+        playerStatsPanel.hidden = true;
     }
     loadLeaderboard();
 }

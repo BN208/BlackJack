@@ -1,0 +1,23 @@
+app-id: online.bcull.blackjack
+runtime: org.freedesktop.Platform
+runtime-version: "25.08"
+sdk: org.freedesktop.Sdk
+command: blackjack
+finish-args:
+  - --share=ipc
+  - --share=network
+  - --socket=fallback-x11
+  - --socket=wayland
+  - --device=dri
+modules:
+  - name: blackjack
+    buildsystem: simple
+    build-commands:
+      - install -d /app/opt/blackjack
+      - cp -a . /app/opt/blackjack/
+      - install -Dm755 /app/opt/blackjack/blackjack-launcher.sh /app/bin/blackjack
+      - install -Dm644 /app/opt/blackjack/online.bcull.blackjack.desktop /app/share/applications/online.bcull.blackjack.desktop
+      - install -Dm644 /app/opt/blackjack/online.bcull.blackjack.svg /app/share/icons/hicolor/scalable/apps/online.bcull.blackjack.svg
+    sources:
+      - type: dir
+        path: build-input

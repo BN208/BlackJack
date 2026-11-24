@@ -9,8 +9,16 @@ account.txt
 
 # Local databases and persistent application data
 *.db
+*.db-*
+*.db.*
 *.sqlite
+*.sqlite-*
+*.sqlite.*
 *.sqlite3
+*.sqlite3-*
+*.sqlite3.*
+*.wal
+*.shm
 
 # Python-generated files
 __pycache__/
@@ -21,6 +29,16 @@ venv/
 # JavaScript dependencies and local tooling output
 node_modules/
 coverage/
+clients/desktop/dist/
+clients/desktop/node_modules/
+clients/android/.gradle/
+clients/android/local.properties
+clients/android/app/build/
+clients/flatpak/build-input/
+clients/flatpak/build-dir/
+clients/flatpak/repo/
+*.jks
+*.keystore
 
 # OS metadata
 .DS_Store

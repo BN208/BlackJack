@@ -16,8 +16,8 @@
                     <div class="dropdown-menu" id="signin-dropdown">
                         <form id="login-form">
                             <button class="button" type="button" id="signup">No Account? Sign Up!</button>
-                            <input type="text" class="txtIn" id="username" placeholder="Username" required />
-                            <input type="password" class="txtIn" id="password" placeholder="Password" required />
+                            <input type="text" class="txtIn" id="username" placeholder="Username" autocomplete="username" maxlength="64" required />
+                            <input type="password" class="txtIn" id="password" placeholder="Password" autocomplete="current-password" maxlength="128" required />
                             <button type="submit" class="button" id="login2">Log In</button>
                         </form>
                     </div>
@@ -52,6 +52,10 @@
                 <div id="admin-signups-state" class="admin-signups-state"></div>
                 <button type="button" class="button small-btn" id="admin-signups-toggle">Enable Signups</button>
             </div>
+            <div class="admin-signups-controls">
+                <div id="admin-approval-state" class="admin-signups-state"></div>
+                <button type="button" class="button small-btn" id="admin-approval-toggle">Require Approval</button>
+            </div>
             <div class="admin-table-wrap">
                 <table id="admin-table">
                     <thead>
@@ -59,6 +63,7 @@
                             <th>Username</th>
                             <th>Balance</th>
                             <th>Admin</th>
+                            <th>Approval</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -89,6 +94,20 @@
                     </thead>
                     <tbody id="lb-body"></tbody>
                 </table>
+                <section id="player-stats-panel" class="player-stats" aria-labelledby="player-stats-title" hidden>
+                    <h2 id="player-stats-title">Your Stats</h2>
+                    <p class="stats-privacy-note">Only you can see these stats.</p>
+                    <dl class="stats-grid">
+                        <div class="stat-card"><dt>Hands played</dt><dd id="stat-hands">0</dd></div>
+                        <div class="stat-card"><dt>Wins</dt><dd id="stat-wins">0</dd></div>
+                        <div class="stat-card"><dt>Losses</dt><dd id="stat-losses">0</dd></div>
+                        <div class="stat-card"><dt>Pushes</dt><dd id="stat-pushes">0</dd></div>
+                        <div class="stat-card"><dt>Blackjacks</dt><dd id="stat-blackjacks">0</dd></div>
+                        <div class="stat-card"><dt>Busts</dt><dd id="stat-busts">0</dd></div>
+                        <div class="stat-card"><dt>Total wagered</dt><dd id="stat-wagered">£0</dd></div>
+                        <div class="stat-card"><dt>Net winnings</dt><dd id="stat-net">£0</dd></div>
+                    </dl>
+                </section>
             </div>
         </div>
 

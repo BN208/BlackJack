@@ -36,7 +36,7 @@ x-casaos:
   author: self
   category: Games
   developer: Ben
-  index: /admin
+  index: /
   port_map: "3000"
   description:
     en_us: Private multiplayer Blackjack served through CasaOS.

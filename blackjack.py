@@ -52,6 +52,7 @@ class BlackjackTable:
         self.phase = "betting"  # "betting" | "playing" | "round_over"
         self.turn_index = 0
         self.message = "Place your bets!"
+        self.pending_round_results = {}
 
     def build_shoe(self):
         self.shoe = [
@@ -74,6 +75,7 @@ class BlackjackTable:
             self.seats[username] = {
                 "hand": [],
                 "bet": 0,
+                "emergency_bet": False,
                 "status": "waiting",  # waiting | bet_placed | playing | stuck | bust | blackjack
                 "result": ""
             }
@@ -90,7 +92,7 @@ class BlackjackTable:
             elif self.phase == "betting" and self.players:
                 self.check_all_bets_placed()
 
-    def place_bet(self, username, amount):
+    def place_bet(self, username, amount, emergency=False):
         if self.phase == "round_over":
             self.reset_for_next_round()
 
@@ -102,6 +104,7 @@ class BlackjackTable:
             return False, "Bet already placed for this hand"
 
         seat["bet"] = amount
+        seat["emergency_bet"] = emergency
         seat["status"] = "bet_placed"
         seat["result"] = ""
         self.check_all_bets_placed()
@@ -186,6 +189,7 @@ class BlackjackTable:
         dealer_bj = (d_val == 21 and len(self.dealer_hand) == 2)
 
         self.payout_results = {}
+        self.pending_round_results = {}
         for u in self.players:
             seat = self.seats[u]
             bet = seat["bet"]
@@ -194,28 +198,43 @@ class BlackjackTable:
 
             p_val, _ = calc_hand_value(seat["hand"])
             player_bj = (seat["status"] == "blackjack")
+            player_bust = (seat["status"] == "bust")
 
-            if seat["status"] == "bust":
+            if player_bust:
                 seat["result"] = f"BUST (-£{bet})"
                 payout = 0
+                outcome = "bust"
             elif player_bj and not dealer_bj:
                 winnings = int(bet * 2.5)
                 seat["result"] = f"BLACKJACK! (+£{winnings - bet})"
                 payout = winnings
+                outcome = "blackjack"
             elif dealer_bj and not player_bj:
                 seat["result"] = f"DEALER BJ (-£{bet})"
                 payout = 0
+                outcome = "loss"
             elif d_val > 21 or p_val > d_val:
                 winnings = bet * 2
                 seat["result"] = f"WIN (+£{bet})"
                 payout = winnings
+                outcome = "win"
             elif p_val == d_val:
                 seat["result"] = "PUSH (Returned)"
                 payout = bet
+                outcome = "push"
             else:
                 seat["result"] = f"LOSE (-£{bet})"
                 payout = 0
+                outcome = "loss"
 
+            self.pending_round_results[u] = {
+                "bet": bet,
+                "payout": payout,
+                "outcome": outcome,
+                "blackjack": player_bj,
+                "bust": player_bust,
+                "emergency_bet": seat["emergency_bet"]
+            }
             if payout > 0:
                 self.payout_results[u] = payout
 
@@ -229,6 +248,7 @@ class BlackjackTable:
             self.seats[u] = {
                 "hand": [],
                 "bet": 0,
+                "emergency_bet": False,
                 "status": "waiting",
                 "result": ""
             }

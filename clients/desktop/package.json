@@ -1,0 +1,52 @@
+{
+  "name": "blackjack-client",
+  "version": "1.0.0",
+  "private": true,
+  "author": "Ben",
+  "description": "Desktop WebView client for the BlackJack server",
+  "main": "main.cjs",
+  "scripts": {
+    "start": "electron .",
+    "test": "node --test",
+    "dist:linux": "electron-builder --linux dir",
+    "dist:win": "electron-builder --win portable"
+  },
+  "devDependencies": {
+    "electron": "^45.4.1",
+    "electron-builder": "26.18.0"
+  },
+  "build": {
+    "appId": "online.bcull.blackjack.client",
+    "productName": "BlackJack",
+    "executableName": "blackjack",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "launcher.html",
+      "main.cjs",
+      "preload.cjs",
+      "server-address.cjs"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "linux": {
+      "target": [
+        {
+          "target": "dir",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    }
+  }
+}
