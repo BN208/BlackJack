@@ -84,11 +84,15 @@ openssl rand -hex 32
 nano .env
 ```
 
-Use the generated random value for `BLACKJACK_SECRET_KEY`. Choose a private `ADMIN_USERNAME` and a strong `ADMIN_PASSWORD`. Save `.env` and keep it private. It is excluded from Git. When a reverse proxy such as Cloudflare Tunnel supplies `X-Forwarded-Proto`, the app uses the browser-facing scheme to set the session cookie's Secure flag. This allows HTTPS at Cloudflare with an HTTP origin to work correctly. `COOKIE_SECURE` is used when requests do not include that forwarded-protocol header; set it to `0` for direct HTTP testing or `1` for direct HTTPS.
+Set each `.env` option as follows:
 
-To fill the first line of `.env`, run `openssl rand -hex 32` on the server and copy the full output (a 64-character random value) after `BLACKJACK_SECRET_KEY=`. For example, if it prints `abc123...`, the line becomes `BLACKJACK_SECRET_KEY=abc123...`; do not type the example text literally. Keep this value private and unchanged across restarts and updates, because changing it logs all users out.
+- `BLACKJACK_SECRET_KEY`: Required secret used to sign login sessions. Generate it on the server with `openssl rand -hex 32`, then replace the entire placeholder value on this line with the command's output (64 random characters). Keep it private and unchanged across restarts and updates; changing it logs all users out.
+- `ADMIN_USERNAME`: Username for the initial owner/admin account. On startup, this account is granted admin privileges. Use a private username.
+- `ADMIN_PASSWORD`: Strong password used when the initial admin account is created. If that username already exists in the database, changing this value does not change its existing password; use the current password or perform a deliberate password reset.
+- `COOKIE_SECURE`: Fallback for requests that do not include `X-Forwarded-Proto`. Use `1` for direct HTTPS access and `0` for direct HTTP access. For Cloudflare Tunnel, the app uses the forwarded browser-facing scheme instead: HTTPS at Cloudflare gets a Secure session cookie even if the tunnel's origin URL uses HTTP. If you also access the server directly over HTTP/Tailscale, use `0` so those direct sessions persist.
+- `CLOUDFLARE_TUNNEL_TOKEN`: Optional. Only needed when running the `cloudflared` service from `docker-compose.tunnel.yml`. Leave unused if you already run the CasaOS cloudflared package or another connector and configure the route in Cloudflare. A Tunnel ID is not a token.
 
-`CLOUDFLARE_TUNNEL_TOKEN` is only needed if you run the optional `cloudflared` Compose service below. A Tunnel ID is not a token. If you already run a connector and will configure the route in the Cloudflare dashboard, you do not need a token for this app.
+Save `.env` and keep it private; it is excluded from Git. Public signups are controlled by the Admin Console and stored in the database, not by an `.env` option.
 
 On the first start, the app creates the configured admin account. If that username already exists in the database, it is granted admin access but keeps its existing password.
 
