@@ -1,4 +1,5 @@
-from flask import Flask, send_from_directory, request, jsonify, session
+from flask import Flask, has_request_context, send_from_directory, request, jsonify, session
+from flask.sessions import SecureCookieSessionInterface
 from functools import wraps
 import re
 import secrets
@@ -9,9 +10,21 @@ from threading import RLock
 import account
 from blackjack import BlackjackTable
 
+
+class ForwardedProtocolSessionInterface(SecureCookieSessionInterface):
+    def get_cookie_secure(self, app):
+        if has_request_context():
+            forwarded_proto = request.headers.get("X-Forwarded-Proto", "")
+            forwarded_proto = forwarded_proto.split(",", 1)[0].strip().lower()
+            if forwarded_proto in ("http", "https"):
+                return forwarded_proto == "https"
+        return super().get_cookie_secure(app)
+
+
 APP_DIR = os.path.dirname(os.path.abspath(__file__))
 USERNAME_PATTERN = re.compile(r"^[A-Za-z0-9_]{3,20}$")
 app = Flask(__name__, static_folder=None)
+app.session_interface = ForwardedProtocolSessionInterface()
 app.secret_key = os.environ.get("BLACKJACK_SECRET_KEY")
 if not app.secret_key:
     app.secret_key = os.environ.get("FLASK_SECRET_KEY")

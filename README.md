@@ -84,7 +84,9 @@ openssl rand -hex 32
 nano .env
 ```
 
-Use the generated random value for `BLACKJACK_SECRET_KEY`. Choose a private `ADMIN_USERNAME` and a strong `ADMIN_PASSWORD`. Set `COOKIE_SECURE=1` when using the app over HTTPS through Cloudflare; use `0` for local HTTP-only testing. Save `.env` and keep it private. It is excluded from Git.
+Use the generated random value for `BLACKJACK_SECRET_KEY`. Choose a private `ADMIN_USERNAME` and a strong `ADMIN_PASSWORD`. Save `.env` and keep it private. It is excluded from Git. When a reverse proxy such as Cloudflare Tunnel supplies `X-Forwarded-Proto`, the app uses the browser-facing scheme to set the session cookie's Secure flag. This allows HTTPS at Cloudflare with an HTTP origin to work correctly. `COOKIE_SECURE` is used when requests do not include that forwarded-protocol header; set it to `0` for direct HTTP testing or `1` for direct HTTPS.
+
+To fill the first line of `.env`, run `openssl rand -hex 32` on the server and copy the full output (a 64-character random value) after `BLACKJACK_SECRET_KEY=`. For example, if it prints `abc123...`, the line becomes `BLACKJACK_SECRET_KEY=abc123...`; do not type the example text literally. Keep this value private and unchanged across restarts and updates, because changing it logs all users out.
 
 `CLOUDFLARE_TUNNEL_TOKEN` is only needed if you run the optional `cloudflared` Compose service below. A Tunnel ID is not a token. If you already run a connector and will configure the route in the Cloudflare dashboard, you do not need a token for this app.
 
@@ -105,7 +107,7 @@ The service publishes port 3000 on the host. If that port is already in use, cha
 ## Cloudflare Tunnel with an existing connector
 
 1. In the Cloudflare Zero Trust dashboard, open your existing Tunnel and add a Public Hostname for your domain.
-2. Set the service to `http://<server-lan-ip>:3000` (or your changed host port). Use the CasaOS server's LAN IP, not `localhost`.
+2. Set the service to `http://<server-lan-ip>:3000` (or your changed host port). Use the CasaOS server's LAN IP, not `localhost`. The public hostname remains HTTPS; the app uses Cloudflare's forwarded-protocol header to set the browser session cookie correctly.
 3. Add a Cloudflare Access application and an allow policy restricted to your identity before sharing the hostname.
 4. Visit `https://<your-domain>/` and sign in. The Admin Console opens automatically for the admin account.
 
